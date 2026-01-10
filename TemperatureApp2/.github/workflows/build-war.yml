@@ -1,1 +1,29 @@
+name: Build WAR for Eclipse Tomcat
 
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-war:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+
+      - name: Build WAR
+        run: mvn clean package
+
+      - name: Upload WAR artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: TemperatureApp-WAR
+          path: target/*.war
