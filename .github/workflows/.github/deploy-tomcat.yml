@@ -1,0 +1,39 @@
+name: Build and Deploy WAR to Docker Tomcat
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout the repo
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup Java
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+
+      # 3️⃣ Build WAR
+      - name: Build WAR
+        run: mvn clean package
+
+      # 4️⃣ Rename WAR
+      - name: Rename WAR
+        run: |
+          mkdir -p output
+          cp target/*.war output/TemperatureApp.war
+
+      # 5️⃣ Deploy WAR to Tomcat (Docker)
+      - name: Deploy WAR to Tomcat
+        run: |
+          curl -u ${{ secrets.TOMCAT_USER }}:${{ secrets.TOMCAT_PASSWORD }} \
+          -T output/TemperatureApp.war \
+          "http://${{ secrets.TOMCAT_HOST }}:${{ secrets.TOMCAT_PORT }}/manager/text/deploy?path=/TemperatureApp&update=true"
