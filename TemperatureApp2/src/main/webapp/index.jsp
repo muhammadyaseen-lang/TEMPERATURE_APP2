@@ -5,7 +5,7 @@
     <title>Temperature Converterrr</title>
 </head>
 <body>
-    <h1>Temperature Converter</h1>
+    <h1>Temperature Converterrr</h1>
     <form action="ConvertServlet" method="post">
         Enter Temperature in Celsius: 
         <input type="text" name="celsius" required>
