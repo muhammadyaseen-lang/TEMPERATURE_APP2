@@ -7,24 +7,26 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # Important: use your local runner
 
     steps:
-      - name: Checkout repository
+      # 1️⃣ Checkout the repo
+      - name: Checkout code
         uses: actions/checkout@v4
 
+      # 2️⃣ Setup Java
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '11'
 
+      # 3️⃣ Build WAR
       - name: Build WAR
         run: mvn clean package
 
-      - name: Copy WAR to Docker Tomcat
+      # 4️⃣ Copy WAR to Docker Tomcat
+      - name: Deploy WAR to Docker Tomcat
         run: |
           docker cp target/*.war tomcat_server:/usr/local/tomcat/webapps/TemperatureApp.war
-
-      - name: Restart Tomcat
-        run: docker restart tomcat_server
+          docker restart tomcat_server
