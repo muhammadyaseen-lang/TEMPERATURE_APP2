@@ -1,4 +1,4 @@
-name: Build WAR for Eclipse Tomcat
+name: Build and Deploy WAR to Docker Tomcat
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-war:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,8 +22,9 @@ jobs:
       - name: Build WAR
         run: mvn clean package
 
-      - name: Upload WAR artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: TemperatureApp-WAR
-          path: target/*.war
+      - name: Copy WAR to Docker Tomcat
+        run: |
+          docker cp target/*.war tomcat_server:/usr/local/tomcat/webapps/TemperatureApp.war
+
+      - name: Restart Tomcat
+        run: docker restart tomcat_server
